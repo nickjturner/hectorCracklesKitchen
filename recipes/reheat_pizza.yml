@@ -1,6 +1,7 @@
 name: Reheat Pizza
-ingredients: []
-instructions:
+ingredients:
+  - Leftover pizza
+steps:
   - Line a baking tray with foil.
   - Put the baking tray in the oven.
   - Preheat the oven to 375ºF.
