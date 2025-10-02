@@ -1,0 +1,18 @@
+---
+name: Lime Cheesecake
+---
+## Ingredients
+- 250g graham crackers
+- 125g unsalted butter, melted
+- 400g cream cheese
+- 66g icing sugar
+- 2 limes
+- 200ml heavy whipping cream
+
+Steps
+1. Whizz the crackers to crumbs in a food processor, or tip into a food bag and crush with a rolling pin. Mix with the melted butter, then press into the base of a 20cm springform cake tin. Chill in the fridge until needed.
+2. Put the cream cheese, icing sugar, lime zest, and juice from one lime in a bowl. Beat with an electric mixer until smooth.
+3. Whisk the heavy whipping cream until it forms soft peaks. Then tip the heavy whipping cream into the cream cheese mix and continue beating until completely combined.
+4. Spoon the cream mixture onto the biscuit base, working from the edges inwards and making sure that there are no air bubbles. Smooth the top of the cheesecake down with the back of a dessert spoon. Leave to set in the fridge for at least a couple of hours.
+
+_Source: https://www.bbcgoodfood.com/recipes/layered-lime-cheesecake_

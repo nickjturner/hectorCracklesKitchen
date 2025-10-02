@@ -1,0 +1,15 @@
+---
+name: Pesto Pasta Salad
+---
+## Ingredients
+- 400g pasta
+- 1 pint cherry tomatoes, halved or quartered
+- 3 handfuls arugula or spinach
+- ½ cup olives
+- Freshly ground black pepper
+- Anything else you want (chickpeas, feta...)
+
+## Steps
+1. Cook the pasta until al dente and drain. Transfer the pasta to a large serving bowl.
+2. To assemble the pasta salad, pour all of the pesto over the pasta and toss until the pasta is lightly and evenly coated. Then add the cherry tomatoes, arugula, olives, and any additional ingredients.
+3. Toss again to combine, then season to taste with pepper. If the pasta needs a little more flavor, add salt or lemon juice to taste, or if the flavors are too bold, let it rest for a few minutes, and add a little splash of olive oil if necessary to tone down the rest.

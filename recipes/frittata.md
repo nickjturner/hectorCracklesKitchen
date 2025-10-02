@@ -1,0 +1,18 @@
+---
+name: Frittata
+---
+## Ingredients
+- 6 whole Large Eggs
+- Salt And Black Pepper
+- 2 tbsp Grated Parmesan Or Romano Cheese
+- 1/4 cup Grated Cheddar Or Monterey Jack Cheese (more To Taste)
+- 1 Tablespoons Butter
+- Anything other ingredients you want!
+
+## Steps
+1. Preheat the oven to 375 F.
+2. Beat together the eggs with the salt and pepper. Stir in the grated cheeses and set aside.
+3. In a large oven-proof non-stick skillet, melt butter over medium-high heat. Add the vegetables and cook for several minutes, stirring frequently, until they have softened. Add any other stuff (sausages?), sprinkle with salt and pepper, and stir to cook with the vegetables for a couple of minutes. Add the kale/spinach or anything else and stir to cook about 1 minute.
+4. Make sure all the ingredients are evenly distributed across the bottom of the skillet, then pour in the egg mixture so that it evenly coats everything. Let it sit on the burner for 30-45 seconds to set the edges, then put the skillet in the oven.
+5. Watch the frittata as it cooks. Let it cook in the oven for 10-12 minutes until the eggs are set but remove it before the eggs brown very much on top.
+6. Slide the frittata out of the skillet and onto a cutting board. With a long serrated knife, slice it into wedges and serve warm with fresh fruit.

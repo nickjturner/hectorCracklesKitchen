@@ -1,11 +1,10 @@
 ---
 name: Chickpea Spinach Curry
-description: A simple, hearty curry with chickpeas, spinach, and a fragrant spice mix.
 ---
 
-<img src="../img/chickpea_spinach_curry.jpeg" alt="Chickpea Spinach Curry" style="width:100%;max-width:100%;height:auto;" />
-
 # Chickpea Spinach Curry
+
+A simple, hearty curry with chickpeas, spinach, and a fragrant spice mix.
 
 ## Ingredients
 

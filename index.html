@@ -8,6 +8,7 @@
   <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <style>
     body {
@@ -135,6 +136,10 @@
       .search-bar {
         padding-left: 40px;
       }
+
+      .recipe-item {
+        max-width: 30vw;
+      }
     }
 
     @media (max-width: 768px) {
@@ -178,26 +183,51 @@
             // Fetch the list of images from the img manifest (for GitHub Pages compatibility)
             const imgManifestResponse = await fetch('img/manifest.json');
             const availableImages = await imgManifestResponse.json();
+            console.log('Available images:', availableImages);
 
             // Fetch the manifest of recipe files
             const manifestResponse = await fetch('recipes/manifest.json');
             const yamlFiles = await manifestResponse.json();
+            console.log('Recipe manifest files:', yamlFiles);
 
             const loadedRecipes = await Promise.all(
               yamlFiles.map(async file => {
-                const recipeResponse = await fetch(`recipes/${file}`);
-                const yamlText = await recipeResponse.text();
-                const recipe = jsyaml.load(yamlText);
-                const baseName = file.replace('.yml', '');
-                const imageFile = availableImages.find(img => img.startsWith(baseName));
-                if (imageFile) {
-                  recipe.image = `img/${imageFile}`;
+                console.log('Processing recipe file:', file);
+                if (!file.endsWith('.md')) {
+                  console.log('Skipping non-md file:', file);
+                  return null;
                 }
-                return recipe;
+                try {
+                  const recipeResponse = await fetch(`recipes/${file}`);
+                  if (!recipeResponse.ok) {
+                    console.error('Failed to fetch recipe file:', file, recipeResponse.status);
+                    return null;
+                  }
+                  const text = await recipeResponse.text();
+                  // Extract frontmatter (YAML between ---) and markdown body
+                  let name = '';
+                  let markdown = text;
+                  const match = /^---\s*([\s\S]*?)\s*---\s*([\s\S]*)$/m.exec(text);
+                  if (match) {
+                    const attributes = jsyaml.load(match[1]);
+                    name = attributes && attributes.name ? attributes.name : '';
+                    markdown = match[2];
+                  }
+                  const baseName = file.replace(/\.(md)$/i, '');
+                  const imageFile = availableImages.find(img => img.startsWith(baseName));
+                  return {
+                    name: name || baseName,
+                    image: imageFile ? `img/${imageFile}` : undefined,
+                    markdown
+                  };
+                } catch (err) {
+                  console.error('Error processing recipe file:', file, err);
+                  return null;
+                }
               })
             );
-
-            setRecipes(loadedRecipes);
+            console.log('Loaded recipes:', loadedRecipes);
+            setRecipes(loadedRecipes.filter(Boolean));
           } catch (error) {
             console.error('Error loading recipes or images:', error);
           }
@@ -223,7 +253,7 @@
       };
 
       const filteredRecipes = recipes.filter((recipe) =>
-        recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
+        recipe.name && recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
       return (
@@ -266,39 +296,8 @@
               </a>
               <div className="recipe-details" style={{ margin: 'auto', maxWidth: '90vw', fontSize: '18px', fontWeight: '400', fontStyle: 'normal', letterSpacing: '0.03em' }}>
                 <h2 style={{ fontSize: '2em', fontWeight: '700', fontStyle: 'normal' }}>{selectedRecipe.name}</h2>
-                {selectedRecipe.description && (
-                    <p>{selectedRecipe.description}</p>
-                )}
-                <h3 style={{ fontSize: '1.5em', fontWeight: '700', fontStyle: 'normal' }}>Ingredients:</h3>
-                {Array.isArray(selectedRecipe.ingredients) && selectedRecipe.ingredients.every(item => item.name && item.ingredients) ? (
-                    <ul>
-                    {selectedRecipe.ingredients.map((group, i) => (
-                        <li key={i}>
-                        <strong>{group.name}:</strong>
-                        <ul>
-                            {group.ingredients.map((ingredient, j) => (
-                            <li key={j}>{ingredient}</li>
-                            ))}
-                        </ul>
-                        </li>
-                    ))}
-                    </ul>
-                ) : (
-                    <ul>
-                    {selectedRecipe.ingredients.map((ingredient, i) => (
-                        <li key={i}>{ingredient}</li>
-                    ))}
-                    </ul>
-                )}
-                <h3>Steps:</h3>
-                <ol>
-                    {Array.isArray(selectedRecipe.steps) &&
-                    selectedRecipe.steps.map((step, i) => (
-                        <li key={i}>{step}</li>
-                    ))}
-                </ol>
-                {selectedRecipe.source && (
-                    <p><strong>Source:</strong> <a href={selectedRecipe.source} target="_blank" rel="noopener noreferrer">{selectedRecipe.source}</a></p>
+                {selectedRecipe.markdown && (
+                  <div dangerouslySetInnerHTML={{ __html: window.marked.parse(selectedRecipe.markdown) }} />
                 )}
               </div>
             </div>
