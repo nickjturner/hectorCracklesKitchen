@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hector Crackle's Kitchen</title>
+  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .content {
+      flex: 1;
+      overflow-y: auto; /* Enable scrolling for the content area */
+    }
+    .banner-image {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin-bottom: 20px;
+    }
+    .recipe-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px; /* Space between items */
+      padding: 20px;
+    }
+    .recipe-item {
+      flex: 1 1 calc(33.333% - 16px); /* 3 items per row */
+      box-sizing: border-box;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .recipe-item img {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 10px;
+    }
+    .recipe-item:hover {
+      background-color: #f0f0f0;
+    }
+    .recipe-image {
+      width: 100%;
+      max-height: 50vh;
+      object-fit: cover; /* Prevent distortion and crop the image */
+      margin-bottom: 20px;
+    }
+    .selected-recipe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+      overflow-y: auto;
+      z-index: 10;
+      display: none; /* Initially hidden */
+    }
+    .selected-recipe.active {
+      display: block; /* Show when active */
+    }
+    a {
+      text-decoration: none; /* Remove underline */
+      color: inherit; /* Inherit color from parent */
+    }
+    a:visited {
+      color: inherit; /* Remove visited link color change */
+    }
+    .search-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      margin: auto;
+    }
+
+    .search-container .fa-magnifying-glass {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+      font-size: 16px;
+      pointer-events: none; /* Ensure the icon does not block input clicks */
+    }
+
+    .search-container .clear-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .search-bar {
+      padding-left: 40px; /* Adjusted padding to align with the icon */
+      padding-right: 40px; /* Adjusted padding to align with the clear icon */
+      display: block;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    @media (min-width: 769px) {
+      .search-container {
+        justify-content: center; /* Ensure the search box is centered on desktop */
+        max-width: 400px;
+      }
+
+      .search-bar {
+        padding-left: 40px; /* Ensure consistent padding for the icon */
+      }
+    }
+
+    @media (max-width: 768px) {
+      .recipe-item {
+        flex: 1 1 100%; /* Stack items vertically */
+      }
+      .search-bar {
+        max-width: 100%; /* Match the width of the recipe grid */
+        padding: 8px 8px 8px 40px; /* Adjust padding for smaller screens */
+      }
+
+      .search-container {
+        width: 90vw;
+        margin: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+  <img src="img/hckbig.png" alt="Recipe App Banner" class="banner-image" />
+    <div id="root">
+      <!-- React content will be rendered here -->
+    </div>
+  </div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const App = () => {
+      const [recipes, setRecipes] = useState([]);
+      const [selectedRecipe, setSelectedRecipe] = useState(null);
+      const [searchTerm, setSearchTerm] = useState("");
+
+      useEffect(() => {
+
+        const fetchImagesAndRecipes = async () => {
+          try {
+            // Fetch the list of images from the img manifest (for GitHub Pages compatibility)
+            const imgManifestResponse = await fetch('img/manifest.json');
+            const availableImages = await imgManifestResponse.json();
+
+            // Fetch the manifest of recipe files
+            const manifestResponse = await fetch('recipes/manifest.json');
+            const yamlFiles = await manifestResponse.json();
+
+            const loadedRecipes = await Promise.all(
+              yamlFiles.map(async file => {
+                const recipeResponse = await fetch(`recipes/${file}`);
+                const yamlText = await recipeResponse.text();
+                const recipe = jsyaml.load(yamlText);
+                const baseName = file.replace('.yml', '');
+                const imageFile = availableImages.find(img => img.startsWith(baseName));
+                if (imageFile) {
+                  recipe.image = `img/${imageFile}`;
+                }
+                return recipe;
+              })
+            );
+
+            setRecipes(loadedRecipes);
+          } catch (error) {
+            console.error('Error loading recipes or images:', error);
+          }
+        };
+
+        fetchImagesAndRecipes();
+      }, []);
+
+      const handleRecipeSelect = (recipe) => {
+        setSelectedRecipe(recipe);
+      };
+
+      const handleBack = () => {
+        setSelectedRecipe(null);
+      };
+
+      const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+      };
+
+      const clearSearch = () => {
+        setSearchTerm("");
+      };
+
+      const filteredRecipes = recipes.filter((recipe) =>
+        recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      return (
+        <div>
+          <div className="search-container">
+            <i className="fa-solid fa-magnifying-glass"></i>
+            <input
+              type="text"
+              className="search-bar"
+              placeholder="Search recipes..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+            {searchTerm && (
+              <i className="fa-solid fa-circle-xmark clear-icon" onClick={clearSearch}></i>
+            )}
+          </div>
+          <div className="recipe-grid">
+            {filteredRecipes.map((recipe, index) => (
+              <div
+                key={index}
+                className="recipe-item"
+                onClick={() => handleRecipeSelect(recipe)}
+              >
+                {recipe.image && <img src={recipe.image} alt={recipe.name} style={{ width: '100%', height: '25vh', objectFit: 'cover' }} />}
+                {recipe.name}
+              </div>
+            ))}
+          </div>
+
+          {selectedRecipe && (
+            <div className={`selected-recipe ${selectedRecipe ? 'active' : ''}`}>
+              <a href="#" onClick={handleBack} style={{ cursor: 'pointer', display: 'block', margin: '10px' }}>
+                &lt; Back
+              </a>
+              {selectedRecipe.image && (
+                <div style={{ marginTop: '10px' }}>
+                  <img src={selectedRecipe.image} alt={selectedRecipe.name} className="recipe-image" />
+                </div>
+              )}
+              <div className="recipe-details" style={{ margin: 'auto', maxWidth: '90vw' }}>
+                <h2>{selectedRecipe.name}</h2>
+                {selectedRecipe.description && (
+                    <p>{selectedRecipe.description}</p>
+                )}
+                <h3>Ingredients:</h3>
+                {Array.isArray(selectedRecipe.ingredients) && selectedRecipe.ingredients.every(item => item.name && item.ingredients) ? (
+                    <ul>
+                    {selectedRecipe.ingredients.map((group, i) => (
+                        <li key={i}>
+                        <strong>{group.name}:</strong>
+                        <ul>
+                            {group.ingredients.map((ingredient, j) => (
+                            <li key={j}>{ingredient}</li>
+                            ))}
+                        </ul>
+                        </li>
+                    ))}
+                    </ul>
+                ) : (
+                    <ul>
+                    {selectedRecipe.ingredients.map((ingredient, i) => (
+                        <li key={i}>{ingredient}</li>
+                    ))}
+                    </ul>
+                )}
+                <h3>Steps:</h3>
+                <ol>
+                    {Array.isArray(selectedRecipe.steps) &&
+                    selectedRecipe.steps.map((step, i) => (
+                        <li key={i}>{step}</li>
+                    ))}
+                </ol>
+                {selectedRecipe.source && (
+                    <p><strong>Source:</strong> <a href={selectedRecipe.source} target="_blank" rel="noopener noreferrer">{selectedRecipe.source}</a></p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
