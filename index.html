@@ -268,19 +268,21 @@
 
       return (
         <div>
-          <div class="search-container">
-            <i className="fas fa-magnifying-glass"></i>
-            <input
-              type="text"
-              class="search-bar"
-              placeholder="Search recipes..."
-              value={searchTerm}
-              onChange={handleSearch}
-            />
-            {searchTerm && (
-              <i className="fas fa-circle-xmark clear-icon" onClick={handleClearSearch}></i>
-            )}
-          </div>
+          {!selectedRecipe && (
+            <div class="search-container">
+              <i className="fas fa-magnifying-glass"></i>
+              <input
+                type="text"
+                class="search-bar"
+                placeholder="Search recipes..."
+                value={searchTerm}
+                onChange={handleSearch}
+              />
+              {searchTerm && (
+                <i className="fas fa-circle-xmark clear-icon" onClick={handleClearSearch}></i>
+              )}
+            </div>
+          )}
           <div class="recipe-grid">
             {filteredRecipes.map(recipe => (
               <div
